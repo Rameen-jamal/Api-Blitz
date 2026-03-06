@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const Team = require('../models/Team');
-const { authenticate, requireAdmin } = require('../middleware/auth');
+const { authenticate, requireAdmin, requireTeam } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -10,6 +10,19 @@ router.get('/', authenticate, requireAdmin, async (req, res) => {
   try {
     const teams = await Team.find().select('-password').sort({ score: -1 });
     res.json({ success: true, data: teams });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Get current team profile (authenticated team)
+router.get('/me', authenticate, requireTeam, async (req, res) => {
+  try {
+    const team = await Team.findById(req.user.id).select('-password');
+    if (!team) {
+      return res.status(404).json({ success: false, message: 'Team not found' });
+    }
+    res.json({ success: true, data: team });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
   }

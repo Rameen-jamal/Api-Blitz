@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../lib/api';
 import { useCompetition } from '../../context/CompetitionContext';
-import { Target, Users, ArrowRight, AlertTriangle } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { Target, Users, ArrowRight, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 
 const difficultyColors = {
   easy: 'bg-green-500/20 text-green-400 border-green-500/30',
@@ -14,7 +15,9 @@ const ChallengeBoard = () => {
   const [challenges, setChallenges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [solvedMap, setSolvedMap] = useState({});
   const { status } = useCompetition();
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchChallenges = async () => {
@@ -34,6 +37,25 @@ const ChallengeBoard = () => {
       setLoading(false);
     }
   }, [status]);
+
+  useEffect(() => {
+    const fetchSolvedChallenges = async () => {
+      if (user?.role !== 'team') return;
+      try {
+        const { data } = await api.get('/teams/me');
+        const map = {};
+        data.data.solvedChallenges.forEach(sc => {
+          map[sc.challengeId] = sc.solvedAt;
+        });
+        setSolvedMap(map);
+      } catch (err) {
+        console.error('Failed to fetch team data:', err);
+      }
+    };
+    if (status === 'active') {
+      fetchSolvedChallenges();
+    }
+  }, [status, user]);
 
   const categories = ['all', ...new Set(challenges.map((c) => c.category))];
   const filtered = filter === 'all'
@@ -98,12 +120,22 @@ const ChallengeBoard = () => {
           <Link
             key={challenge._id}
             to={`/challenges/${challenge._id}`}
-            className="group bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-blue-500/50 transition-all hover:shadow-lg hover:shadow-blue-500/5 animate-fade-in"
+            className={`group bg-gray-900 border rounded-xl p-6 hover:border-blue-500/50 transition-all hover:shadow-lg hover:shadow-blue-500/5 animate-fade-in ${
+              solvedMap[challenge._id] ? 'border-green-500/40' : 'border-gray-800'
+            }`}
           >
             <div className="flex items-start justify-between mb-3">
-              <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${difficultyColors[challenge.difficulty]}`}>
-                {challenge.difficulty}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${difficultyColors[challenge.difficulty]}`}>
+                  {challenge.difficulty}
+                </span>
+                {solvedMap[challenge._id] && (
+                  <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+                    <CheckCircle className="h-3 w-3" />
+                    Solved
+                  </span>
+                )}
+              </div>
               <span className="text-2xl font-bold text-blue-400">{challenge.points}</span>
             </div>
 
@@ -128,6 +160,13 @@ const ChallengeBoard = () => {
               </div>
               <ArrowRight className="h-4 w-4 text-gray-600 group-hover:text-blue-400 transition-colors" />
             </div>
+
+            {solvedMap[challenge._id] && (
+              <div className="mt-3 pt-3 border-t border-green-500/20 flex items-center gap-1.5 text-xs text-green-400/70">
+                <Clock className="h-3 w-3" />
+                Solved at {new Date(solvedMap[challenge._id]).toLocaleString()}
+              </div>
+            )}
           </Link>
         ))}
       </div>

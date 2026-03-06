@@ -26,14 +26,23 @@ const Leaderboard = () => {
   useEffect(() => {
     const handleUpdate = (teams) => {
       if (!leaderboardFrozen) {
-        const sorted = [...teams]
-          .sort((a, b) => b.score - a.score)
-          .map((t, i) => ({
-            rank: i + 1,
+        const sorted = [...teams].map(t => {
+          const lastSolvedAt = t.solvedChallenges?.length > 0
+            ? new Date(Math.max(...t.solvedChallenges.map(sc => new Date(sc.solvedAt).getTime())))
+            : null;
+          return {
             teamName: t.teamName,
             score: t.score,
             challengesSolved: t.solvedChallenges?.length || 0,
-          }));
+            lastSolvedAt: lastSolvedAt ? lastSolvedAt.toISOString() : null,
+          };
+        }).sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          if (!a.lastSolvedAt && !b.lastSolvedAt) return 0;
+          if (!a.lastSolvedAt) return 1;
+          if (!b.lastSolvedAt) return -1;
+          return new Date(a.lastSolvedAt) - new Date(b.lastSolvedAt);
+        }).map((t, i) => ({ ...t, rank: i + 1 }));
         setLeaderboard(sorted);
       }
     };
@@ -94,6 +103,9 @@ const Leaderboard = () => {
               <th className="px-6 py-4 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">
                 Solved
               </th>
+              <th className="px-6 py-4 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                Last Solve
+              </th>
               <th className="px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">
                 Score
               </th>
@@ -127,6 +139,11 @@ const Leaderboard = () => {
                 </td>
                 <td className="px-6 py-4 text-center text-gray-400">
                   {entry.challengesSolved}
+                </td>
+                <td className="px-6 py-4 text-center text-gray-500 text-xs">
+                  {entry.lastSolvedAt
+                    ? new Date(entry.lastSolvedAt).toLocaleTimeString()
+                    : '-'}
                 </td>
                 <td className="px-6 py-4 text-right">
                   <span className="font-mono font-bold text-blue-400">{entry.score}</span>

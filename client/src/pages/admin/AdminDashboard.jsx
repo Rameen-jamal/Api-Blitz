@@ -41,14 +41,23 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     const handleUpdate = (teams) => {
-      const sorted = [...teams]
-        .sort((a, b) => b.score - a.score)
-        .map((t, i) => ({
-          rank: i + 1,
+      const sorted = [...teams].map(t => {
+        const lastSolvedAt = t.solvedChallenges?.length > 0
+          ? new Date(Math.max(...t.solvedChallenges.map(sc => new Date(sc.solvedAt).getTime())))
+          : null;
+        return {
           teamName: t.teamName,
           score: t.score,
-          challengesSolved: t.solvedChallenges?.length || 0
-        }));
+          challengesSolved: t.solvedChallenges?.length || 0,
+          lastSolvedAt: lastSolvedAt ? lastSolvedAt.toISOString() : null,
+        };
+      }).sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        if (!a.lastSolvedAt && !b.lastSolvedAt) return 0;
+        if (!a.lastSolvedAt) return 1;
+        if (!b.lastSolvedAt) return -1;
+        return new Date(a.lastSolvedAt) - new Date(b.lastSolvedAt);
+      }).map((t, i) => ({ ...t, rank: i + 1 }));
       setLeaderboard(sorted);
     };
 
@@ -107,6 +116,7 @@ const AdminDashboard = () => {
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase w-16">Rank</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase">Team</th>
               <th className="px-6 py-3 text-center text-xs font-semibold text-gray-400 uppercase">Solved</th>
+              <th className="px-6 py-3 text-center text-xs font-semibold text-gray-400 uppercase">Last Solve</th>
               <th className="px-6 py-3 text-right text-xs font-semibold text-gray-400 uppercase">Score</th>
             </tr>
           </thead>
@@ -116,12 +126,17 @@ const AdminDashboard = () => {
                 <td className="px-6 py-3 text-gray-400 font-mono">{entry.rank}</td>
                 <td className="px-6 py-3 text-white font-medium">{entry.teamName}</td>
                 <td className="px-6 py-3 text-center text-gray-400">{entry.challengesSolved}</td>
+                <td className="px-6 py-3 text-center text-gray-500 text-xs">
+                  {entry.lastSolvedAt
+                    ? new Date(entry.lastSolvedAt).toLocaleTimeString()
+                    : '-'}
+                </td>
                 <td className="px-6 py-3 text-right font-mono font-bold text-purple-400">{entry.score}</td>
               </tr>
             ))}
             {leaderboard.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
+                <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
                   No teams yet
                 </td>
               </tr>

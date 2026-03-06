@@ -44,7 +44,7 @@ router.post('/', authenticate, requireTeam, submitLimiter, async (req, res) => {
 
     // Check if already solved
     const team = await Team.findById(req.user.id);
-    if (team.solvedChallenges.includes(challengeId)) {
+    if (team.solvedChallenges.some(sc => sc.challengeId.toString() === challengeId.toString())) {
       return res.status(400).json({ success: false, message: 'Challenge already solved' });
     }
 
@@ -61,7 +61,7 @@ router.post('/', authenticate, requireTeam, submitLimiter, async (req, res) => {
     if (isCorrect) {
       // Update team score and solved challenges
       team.score += challenge.points;
-      team.solvedChallenges.push(challengeId);
+      team.solvedChallenges.push({ challengeId, solvedAt: new Date() });
       await team.save();
 
       // Update challenge solved count

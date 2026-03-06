@@ -33,8 +33,8 @@ const teamSchema = new mongoose.Schema({
     default: 0
   },
   solvedChallenges: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Challenge'
+    challengeId: { type: mongoose.Schema.Types.ObjectId, ref: 'Challenge' },
+    solvedAt: { type: Date, default: Date.now }
   }],
   isActive: {
     type: Boolean,
