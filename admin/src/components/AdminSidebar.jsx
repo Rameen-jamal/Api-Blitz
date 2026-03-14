@@ -11,22 +11,22 @@ const AdminSidebar = () => {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/admin/login');
+    navigate('/login');
   };
 
   const links = [
-    { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/admin/teams', icon: Users, label: 'Teams' },
-    { to: '/admin/challenges', icon: Target, label: 'Challenges' },
-    { to: '/admin/competition', icon: Settings, label: 'Competition' },
-    { to: '/admin/submissions', icon: FileText, label: 'Submissions' },
+    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/teams', icon: Users, label: 'Teams' },
+    { to: '/challenges', icon: Target, label: 'Challenges' },
+    { to: '/competition', icon: Settings, label: 'Competition' },
+    { to: '/submissions', icon: FileText, label: 'Submissions' },
   ];
 
   return (
     <aside className="w-64 bg-gray-900 border-r border-gray-800 min-h-screen flex flex-col">
       {/* Logo */}
       <div className="p-6 border-b border-gray-800">
-        <Link to="/admin/dashboard" className="flex items-center gap-2">
+        <Link to="/dashboard" className="flex items-center gap-2">
           <Shield className="h-6 w-6 text-purple-500" />
           <span className="font-bold text-lg text-white">Admin Panel</span>
         </Link>

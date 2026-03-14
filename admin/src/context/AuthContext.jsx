@@ -11,15 +11,15 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem('user');
+    const stored = localStorage.getItem('admin_user');
     return stored ? JSON.parse(stored) : null;
   });
 
   const login = async (username, password) => {
-    const { data } = await api.post('/auth/login', { username, password });
+    const { data } = await api.post('/auth/admin/login', { username, password });
     const { accessToken, user: userData } = data.data;
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('admin_accessToken', accessToken);
+    localStorage.setItem('admin_user', JSON.stringify(userData));
     setUser(userData);
     return userData;
   };
@@ -28,8 +28,8 @@ export const AuthProvider = ({ children }) => {
     try {
       await api.post('/auth/logout');
     } catch (e) {}
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('user');
+    localStorage.removeItem('admin_accessToken');
+    localStorage.removeItem('admin_user');
     setUser(null);
   };
 
@@ -38,7 +38,6 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     isAuthenticated: !!user,
-    isTeam: user?.role === 'team',
   };
 
   return (

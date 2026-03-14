@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import api from '../../lib/api';
-import socket from '../../lib/socket';
+import api from '../lib/api';
+import socket from '../lib/socket';
 import { Users, Target, FileText, TrendingUp, Trophy } from 'lucide-react';
 
 const AdminDashboard = () => {

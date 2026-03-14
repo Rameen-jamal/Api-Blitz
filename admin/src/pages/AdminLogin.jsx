@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { Shield, AlertCircle } from 'lucide-react';
 
 const AdminLogin = () => {
@@ -8,7 +8,7 @@ const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { adminLogin } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -22,8 +22,8 @@ const AdminLogin = () => {
 
     setLoading(true);
     try {
-      await adminLogin(username, password);
-      navigate('/admin/dashboard');
+      await login(username, password);
+      navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     } finally {

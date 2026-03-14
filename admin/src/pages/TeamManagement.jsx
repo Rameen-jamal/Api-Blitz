@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../../lib/api';
+import api from '../lib/api';
 import { Users, Plus, Edit, RotateCcw, ToggleLeft, ToggleRight, Trash2, X } from 'lucide-react';
 
 const TeamManagement = () => {

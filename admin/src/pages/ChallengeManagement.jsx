@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../../lib/api';
+import api from '../lib/api';
 import { Target, Plus, Edit, ToggleLeft, ToggleRight, Trash2, X } from 'lucide-react';
 
 const ChallengeManagement = () => {
