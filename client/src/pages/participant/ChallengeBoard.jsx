@@ -7,7 +7,7 @@ import { Target, Users, ArrowRight, AlertTriangle, CheckCircle, Clock } from 'lu
 
 const difficultyColors = {
   easy: 'bg-green-500/20 text-green-400 border-green-500/30',
-  medium: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+  medium: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
   hard: 'bg-red-500/20 text-red-400 border-red-500/30',
 };
 
@@ -65,17 +65,17 @@ const ChallengeBoard = () => {
   if (status !== 'active') {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <div className="text-center">
-          <AlertTriangle className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-white mb-2">
-            {status === 'paused' ? 'Competition Paused' : status === 'ended' ? 'Competition Ended' : 'Competition Not Started'}
+        <div className="text-center animate-fade-in-up">
+          <AlertTriangle className="h-16 w-16 text-yellow-500/80 mx-auto mb-4" />
+          <h2 className="font-teko text-3xl font-bold text-white mb-2 tracking-wide">
+            {status === 'paused' ? 'MISSION ON HOLD' : status === 'ended' ? 'MISSION COMPLETE' : 'AWAITING ORDERS'}
           </h2>
-          <p className="text-gray-400">
+          <p className="text-gray-500">
             {status === 'paused'
-              ? 'The competition is currently paused. Please wait...'
+              ? 'The competition is currently paused. Stand by...'
               : status === 'ended'
               ? 'The competition has ended. Check the leaderboard!'
-              : 'Challenges will appear here when the competition begins.'}
+              : 'Challenges will deploy when the mission begins.'}
           </p>
         </div>
       </div>
@@ -85,28 +85,30 @@ const ChallengeBoard = () => {
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
       </div>
     );
   }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Challenges</h1>
-        <p className="text-gray-400">Solve API challenges to earn points</p>
+      <div className="mb-8 animate-fade-in-up">
+        <h1 className="font-teko text-4xl font-bold text-white mb-1 tracking-wide">
+          CHALLENGES
+        </h1>
+        <p className="text-gray-500 text-sm">Complete objectives. Earn intel. Climb the ranks.</p>
       </div>
 
       {/* Category Filter */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-6 animate-fade-in-up stagger-1">
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setFilter(cat)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors capitalize ${
+            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 capitalize border ${
               filter === cat
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-200'
+                ? 'bg-green-500/15 text-green-400 border-green-500/30 shadow-[0_0_10px_rgba(74,222,128,0.15)]'
+                : 'bg-transparent text-gray-500 border-gray-800 hover:border-green-500/20 hover:text-green-300'
             }`}
           >
             {cat}
@@ -116,12 +118,12 @@ const ChallengeBoard = () => {
 
       {/* Challenge Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map((challenge) => (
+        {filtered.map((challenge, index) => (
           <Link
             key={challenge._id}
             to={`/challenges/${challenge._id}`}
-            className={`group bg-gray-900 border rounded-xl p-6 hover:border-blue-500/50 transition-all hover:shadow-lg hover:shadow-blue-500/5 animate-fade-in ${
-              solvedMap[challenge._id] ? 'border-green-500/40' : 'border-gray-800'
+            className={`group glass-card rounded-xl p-6 animate-fade-in-up stagger-${Math.min(index + 2, 9)} ${
+              solvedMap[challenge._id] ? 'border-green-500/30' : ''
             }`}
           >
             <div className="flex items-start justify-between mb-3">
@@ -130,25 +132,25 @@ const ChallengeBoard = () => {
                   {challenge.difficulty}
                 </span>
                 {solvedMap[challenge._id] && (
-                  <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+                  <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-lime-500/20 text-lime-400 border border-lime-500/30">
                     <CheckCircle className="h-3 w-3" />
-                    Solved
+                    Cleared
                   </span>
                 )}
               </div>
-              <span className="text-2xl font-bold text-blue-400">{challenge.points}</span>
+              <span className="text-2xl font-bold text-green-400 font-mono">{challenge.points}</span>
             </div>
 
-            <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors">
+            <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-green-400 transition-colors duration-200">
               {challenge.title}
             </h3>
 
-            <p className="text-sm text-gray-400 mb-4 line-clamp-2">
+            <p className="text-sm text-gray-500 mb-4 line-clamp-2">
               {challenge.description}
             </p>
 
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4 text-xs text-gray-500">
+              <div className="flex items-center gap-4 text-xs text-gray-600">
                 <span className="flex items-center gap-1">
                   <Target className="h-3 w-3" />
                   {challenge.category}
@@ -158,11 +160,11 @@ const ChallengeBoard = () => {
                   {challenge.solvedBy} solved
                 </span>
               </div>
-              <ArrowRight className="h-4 w-4 text-gray-600 group-hover:text-blue-400 transition-colors" />
+              <ArrowRight className="h-4 w-4 text-gray-700 group-hover:text-green-400 group-hover:translate-x-1 transition-all duration-200" />
             </div>
 
             {solvedMap[challenge._id] && (
-              <div className="mt-3 pt-3 border-t border-green-500/20 flex items-center gap-1.5 text-xs text-green-400/70">
+              <div className="mt-3 pt-3 border-t border-green-500/15 flex items-center gap-1.5 text-xs text-green-500/60">
                 <Clock className="h-3 w-3" />
                 Solved at {new Date(solvedMap[challenge._id]).toLocaleString()}
               </div>
@@ -172,7 +174,7 @@ const ChallengeBoard = () => {
       </div>
 
       {filtered.length === 0 && (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-gray-600">
           No challenges found in this category.
         </div>
       )}

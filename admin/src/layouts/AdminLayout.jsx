@@ -3,7 +3,7 @@ import AdminSidebar from '../components/AdminSidebar';
 
 const AdminLayout = () => {
   return (
-    <div className="min-h-screen bg-gray-950 flex">
+    <div className="min-h-screen animated-bg flex">
       <AdminSidebar />
       <main className="flex-1 overflow-auto">
         <Outlet />

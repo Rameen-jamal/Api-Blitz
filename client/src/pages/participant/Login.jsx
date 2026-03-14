@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Zap, AlertCircle } from 'lucide-react';
+import { Crosshair, AlertCircle } from 'lucide-react';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -32,62 +32,73 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen animated-bg flex items-center justify-center px-4">
+      <div className="w-full max-w-md animate-fade-in-up">
         {/* Logo */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-10">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <Zap className="h-10 w-10 text-blue-500" />
-            <h1 className="text-4xl font-bold text-white">API Blitz</h1>
+            <Crosshair className="h-12 w-12 text-green-400 animate-text-glow" />
+            <h1 className="font-teko text-6xl font-bold text-white tracking-wider">
+              API <span className="text-green-400">BLITZ</span>
+            </h1>
           </div>
-          <p className="text-gray-400">CTF-Style API Competition Platform</p>
+          <p className="text-gray-500 text-sm tracking-widest uppercase font-medium">
+            Tactical API Competition Platform
+          </p>
         </div>
 
-        {/* Login Form */}
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 shadow-2xl">
-          <h2 className="text-xl font-semibold text-white mb-6">Team Login</h2>
+        {/* Login Card */}
+        <div className="glass-card rounded-2xl p-8 shadow-2xl animate-border-glow">
+          <h2 className="font-teko text-2xl font-semibold text-white mb-6 tracking-wide">
+            TEAM LOGIN
+          </h2>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-2 text-red-400 text-sm">
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-2 text-red-400 text-sm animate-fade-in">
               <AlertCircle className="h-4 w-4 flex-shrink-0" />
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-400 mb-1.5 tracking-wide uppercase">
                 Username
               </label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="w-full px-4 py-3 glass-input rounded-lg text-white placeholder-gray-600 focus:outline-none transition font-mono text-sm"
                 placeholder="Enter team username"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              <label className="block text-sm font-medium text-gray-400 mb-1.5 tracking-wide uppercase">
                 Password
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="w-full px-4 py-3 glass-input rounded-lg text-white placeholder-gray-600 focus:outline-none transition font-mono text-sm"
                 placeholder="Enter password"
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+              className="w-full py-3 btn-green rounded-lg text-sm tracking-wider uppercase"
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? 'AUTHENTICATING...' : 'DEPLOY'}
             </button>
           </form>
         </div>
+
+        {/* Flavor text */}
+        <p className="text-center text-gray-700 text-xs mt-6 tracking-widest uppercase font-mono">
+          Bravo Six, Going Dark
+        </p>
       </div>
     </div>
   );
