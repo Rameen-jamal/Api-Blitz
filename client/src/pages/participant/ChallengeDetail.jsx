@@ -251,6 +251,20 @@ const ChallengeDetail = () => {
                   </span>
                 )}
               </div>
+              {/* Response Headers */}
+              {response.headers && Object.keys(response.headers).length > 0 && (
+                <div>
+                  <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Response Headers</h3>
+                  <div className="glass-input rounded-lg p-3 space-y-1 max-h-40 overflow-y-auto">
+                    {Object.entries(response.headers).map(([key, value]) => (
+                      <div key={key} className="flex gap-2 text-xs font-mono">
+                        <span className="text-green-400 shrink-0">{key}:</span>
+                        <span className="text-gray-300 break-all">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="border border-green-500/10 rounded-lg overflow-hidden">
                 <Editor height="400px" language="json" theme="vs-dark"
                   value={typeof response.data === 'object' ? JSON.stringify(response.data, null, 2) : String(response.data)}

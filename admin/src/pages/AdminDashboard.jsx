@@ -81,7 +81,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Live Leaderboard */}
-      <div className="glass-card-static rounded-xl overflow-hidden animate-fade-in-up stagger-5">
+      <div className="glass-card-static rounded-xl overflow-x-auto animate-fade-in-up stagger-5">
         <div className="px-6 py-4 border-b border-green-500/10 flex items-center gap-2">
           <Trophy className="h-5 w-5 text-yellow-400" />
           <h2 className="font-teko text-xl font-semibold text-white tracking-wide">LIVE LEADERBOARD</h2>

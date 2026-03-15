@@ -89,9 +89,24 @@ export const CompetitionProvider = ({ children }) => {
       setStatus('active');
     });
 
+    socket.on('competition:ended', (comp) => {
+      setCompetition(comp);
+      setStatus('ended');
+    });
+
+    socket.on('competition:reset', () => {
+      setCompetition(null);
+      setStatus('not-started');
+      setLeaderboardFrozen(false);
+      setTimeLeft(null);
+    });
+
     socket.on('timer:sync', (data) => {
       setCompetition(prev => prev ? { ...prev, ...data } : data);
-      if (data.isPaused) {
+      if (!data.isActive && !data.isPaused) {
+        if (data.endTime && new Date(data.endTime) < new Date()) setStatus('ended');
+        else setStatus('not-started');
+      } else if (data.isPaused) {
         setStatus('paused');
       } else if (data.isActive) {
         setStatus('active');
@@ -114,6 +129,8 @@ export const CompetitionProvider = ({ children }) => {
       socket.off('competition:started');
       socket.off('competition:paused');
       socket.off('competition:resumed');
+      socket.off('competition:ended');
+      socket.off('competition:reset');
       socket.off('timer:sync');
       socket.off('timer:extended');
       socket.off('leaderboard:frozen');

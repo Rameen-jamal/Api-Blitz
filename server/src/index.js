@@ -15,6 +15,7 @@ const challengeRoutes = require('./routes/challenges');
 const submissionRoutes = require('./routes/submissions');
 const competitionRoutes = require('./routes/competition');
 const leaderboardRoutes = require('./routes/leaderboard');
+const challengeApisRouter = require('./challengeApis');
 
 const app = express();
 const server = http.createServer(app);
@@ -48,6 +49,9 @@ app.use('/api/challenges', challengeRoutes);
 app.use('/api/submissions', submissionRoutes);
 app.use('/api/competition', competitionRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
+
+// Challenge APIs (public, not JWT-protected)
+app.use('/challenge-api', challengeApisRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {

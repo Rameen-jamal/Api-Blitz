@@ -77,7 +77,7 @@ const SubmissionsMonitor = () => {
       </div>
 
       {/* Submissions Table */}
-      <div className="glass-card-static rounded-xl overflow-hidden animate-fade-in-up stagger-3">
+      <div className="glass-card-static rounded-xl overflow-x-auto animate-fade-in-up stagger-3">
         <table className="admin-table">
           <thead><tr><th>Team</th><th>Challenge</th><th>Submitted Flag</th><th className="text-center">Result</th><th className="text-right">Time</th></tr></thead>
           <tbody>

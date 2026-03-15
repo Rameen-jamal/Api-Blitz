@@ -182,6 +182,56 @@ router.put('/extend', authenticate, requireAdmin, async (req, res) => {
   }
 });
 
+// End competition (admin only)
+router.put('/end', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const competition = await Competition.findOne().sort({ createdAt: -1 });
+    if (!competition) {
+      return res.status(404).json({ success: false, message: 'No competition configured' });
+    }
+
+    competition.isActive = false;
+    competition.isPaused = false;
+    competition.pausedTimeRemaining = null;
+    await competition.save();
+
+    try {
+      const io = getIO();
+      io.emit('competition:ended', competition);
+      io.emit('timer:sync', {
+        endTime: competition.endTime,
+        isActive: false,
+        isPaused: false
+      });
+    } catch (e) {}
+
+    res.json({ success: true, data: competition });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Reset competition (admin only)
+router.delete('/reset', authenticate, requireAdmin, async (req, res) => {
+  try {
+    await Competition.deleteMany({});
+
+    try {
+      const io = getIO();
+      io.emit('competition:reset');
+      io.emit('timer:sync', {
+        endTime: null,
+        isActive: false,
+        isPaused: false
+      });
+    } catch (e) {}
+
+    res.json({ success: true, message: 'Competition reset successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // Freeze leaderboard (admin only)
 router.put('/freeze', authenticate, requireAdmin, async (req, res) => {
   try {

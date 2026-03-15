@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../lib/api';
+import socket from '../../lib/socket';
 import { useCompetition } from '../../context/CompetitionContext';
 import { useAuth } from '../../context/AuthContext';
 import { Target, Users, ArrowRight, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
@@ -36,6 +37,17 @@ const ChallengeBoard = () => {
     } else {
       setLoading(false);
     }
+  }, [status]);
+
+  // Re-fetch when admin updates challenges
+  useEffect(() => {
+    const handleUpdate = () => {
+      if (status === 'active') {
+        api.get('/challenges').then(({ data }) => setChallenges(data.data)).catch(() => {});
+      }
+    };
+    socket.on('challenges:updated', handleUpdate);
+    return () => socket.off('challenges:updated', handleUpdate);
   }, [status]);
 
   useEffect(() => {

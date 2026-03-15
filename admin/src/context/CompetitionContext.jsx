@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import socket from '../lib/socket';
 import api from '../lib/api';
 
@@ -16,28 +16,14 @@ export const CompetitionProvider = ({ children }) => {
   const [leaderboardFrozen, setLeaderboardFrozen] = useState(false);
   const [status, setStatus] = useState('not-started');
 
-  useEffect(() => {
-    const fetchCompetition = async () => {
-      try {
-        const { data } = await api.get('/competition');
-        if (data.data) {
-          setCompetition(data.data);
-          setLeaderboardFrozen(data.data.leaderboardFrozen);
-          updateStatus(data.data);
-        }
-      } catch (e) {
-        console.error('Failed to fetch competition:', e);
-      }
-    };
-    fetchCompetition();
-  }, []);
-
-  const updateStatus = (comp) => {
+  const updateStatus = useCallback((comp) => {
     if (!comp) {
       setStatus('not-started');
       return;
     }
-    if (!comp.isActive) {
+    if (!comp.isActive && !comp.isPaused && comp.endTime && new Date(comp.endTime) < new Date()) {
+      setStatus('ended');
+    } else if (!comp.isActive) {
       setStatus('not-started');
     } else if (comp.isPaused) {
       setStatus('paused');
@@ -47,8 +33,28 @@ export const CompetitionProvider = ({ children }) => {
       setStatus('active');
     }
     setLeaderboardFrozen(comp.leaderboardFrozen);
-  };
+  }, []);
 
+  const fetchStatus = useCallback(async () => {
+    try {
+      const { data } = await api.get('/competition');
+      if (data.data) {
+        setCompetition(data.data);
+        setLeaderboardFrozen(data.data.leaderboardFrozen);
+        updateStatus(data.data);
+      } else {
+        setCompetition(null);
+        setStatus('not-started');
+        setLeaderboardFrozen(false);
+      }
+    } catch (e) {
+      console.error('Failed to fetch competition:', e);
+    }
+  }, [updateStatus]);
+
+  useEffect(() => { fetchStatus(); }, [fetchStatus]);
+
+  // Timer countdown
   useEffect(() => {
     if (!competition || status !== 'active') {
       setTimeLeft(null);
@@ -60,9 +66,7 @@ export const CompetitionProvider = ({ children }) => {
       const now = Date.now();
       const diff = Math.max(0, end - now);
       setTimeLeft(diff);
-      if (diff <= 0) {
-        setStatus('ended');
-      }
+      if (diff <= 0) setStatus('ended');
     };
 
     tick();
@@ -70,47 +74,53 @@ export const CompetitionProvider = ({ children }) => {
     return () => clearInterval(interval);
   }, [competition, status]);
 
+  // Socket events
   useEffect(() => {
     socket.on('competition:started', (comp) => {
       setCompetition(comp);
       setStatus('active');
     });
-
     socket.on('competition:paused', (comp) => {
       setCompetition(comp);
       setStatus('paused');
     });
-
     socket.on('competition:resumed', (comp) => {
       setCompetition(comp);
       setStatus('active');
     });
-
+    socket.on('competition:ended', (comp) => {
+      setCompetition(comp);
+      setStatus('ended');
+    });
+    socket.on('competition:reset', () => {
+      setCompetition(null);
+      setStatus('not-started');
+      setLeaderboardFrozen(false);
+      setTimeLeft(null);
+    });
     socket.on('timer:sync', (data) => {
       setCompetition(prev => prev ? { ...prev, ...data } : data);
-      if (data.isPaused) {
+      if (!data.isActive && !data.isPaused) {
+        if (data.endTime && new Date(data.endTime) < new Date()) setStatus('ended');
+        else setStatus('not-started');
+      } else if (data.isPaused) {
         setStatus('paused');
       } else if (data.isActive) {
         setStatus('active');
       }
     });
-
     socket.on('timer:extended', (data) => {
       setCompetition(prev => prev ? { ...prev, endTime: data.endTime } : prev);
     });
-
-    socket.on('leaderboard:frozen', () => {
-      setLeaderboardFrozen(true);
-    });
-
-    socket.on('leaderboard:unfrozen', () => {
-      setLeaderboardFrozen(false);
-    });
+    socket.on('leaderboard:frozen', () => setLeaderboardFrozen(true));
+    socket.on('leaderboard:unfrozen', () => setLeaderboardFrozen(false));
 
     return () => {
       socket.off('competition:started');
       socket.off('competition:paused');
       socket.off('competition:resumed');
+      socket.off('competition:ended');
+      socket.off('competition:reset');
       socket.off('timer:sync');
       socket.off('timer:extended');
       socket.off('leaderboard:frozen');
@@ -134,6 +144,7 @@ export const CompetitionProvider = ({ children }) => {
       formattedTime: formatTime(timeLeft),
       leaderboardFrozen,
       status,
+      fetchStatus,
       setCompetition,
       updateStatus
     }}>

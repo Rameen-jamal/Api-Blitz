@@ -78,7 +78,7 @@ const TeamManagement = () => {
       )}
 
       {/* Table */}
-      <div className="glass-card-static rounded-xl overflow-hidden animate-fade-in-up stagger-1">
+      <div className="glass-card-static rounded-xl overflow-x-auto animate-fade-in-up stagger-1">
         <table className="admin-table">
           <thead><tr><th>Team</th><th>Members</th><th className="text-center">Score</th><th className="text-center">Status</th><th className="text-right">Actions</th></tr></thead>
           <tbody>

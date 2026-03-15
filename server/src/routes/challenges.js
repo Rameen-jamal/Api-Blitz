@@ -1,6 +1,7 @@
 const express = require('express');
 const Challenge = require('../models/Challenge');
 const { authenticate, requireAdmin, requireTeam } = require('../middleware/auth');
+const { getIO } = require('../socket');
 
 const router = express.Router();
 
@@ -63,6 +64,7 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
       uniqueFlagPerTeam: uniqueFlagPerTeam || false
     });
 
+    try { getIO().emit('challenges:updated'); } catch (e) {}
     res.status(201).json({ success: true, data: challenge });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message || 'Server error' });
@@ -82,6 +84,7 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
       return res.status(404).json({ success: false, message: 'Challenge not found' });
     }
 
+    try { getIO().emit('challenges:updated'); } catch (e) {}
     res.json({ success: true, data: challenge });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message || 'Server error' });
@@ -99,6 +102,7 @@ router.put('/:id/toggle', authenticate, requireAdmin, async (req, res) => {
     challenge.isActive = !challenge.isActive;
     await challenge.save();
 
+    try { getIO().emit('challenges:updated'); } catch (e) {}
     res.json({ success: true, data: challenge });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
@@ -113,6 +117,7 @@ router.delete('/:id', authenticate, requireAdmin, async (req, res) => {
       return res.status(404).json({ success: false, message: 'Challenge not found' });
     }
 
+    try { getIO().emit('challenges:updated'); } catch (e) {}
     res.json({ success: true, message: 'Challenge deleted successfully' });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
