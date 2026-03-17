@@ -10,7 +10,13 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    // This disables sourcemaps for the production build
+    sourcemap: false,
+  },
   server: {
     port: 5174,
-  },
+    // This helps the dev server ignore the corrupted lucide-react maps
+    sourcemapIgnoreList: (path) => path.includes('node_modules')
+  }
 })

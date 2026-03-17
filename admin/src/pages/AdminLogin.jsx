@@ -6,10 +6,10 @@ import { Shield, AlertCircle } from 'lucide-react';
 const AdminLogin = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError]     = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
+  const { login }  = useAuth();
+  const navigate   = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,46 +24,61 @@ const AdminLogin = () => {
   return (
     <div className="min-h-screen animated-bg flex items-center justify-center px-4">
       <div className="w-full max-w-md animate-fade-in-up">
+
+        {/* Logo */}
         <div className="text-center mb-10">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-14 h-14 rounded-2xl bg-green-500/15 flex items-center justify-center border border-green-500/20 animate-border-glow">
-              <Shield className="h-8 w-8 text-green-400" />
+          <div className="flex items-center justify-center mb-5">
+            <div className="w-16 h-16 rounded-2xl bg-purple-500/15 flex items-center justify-center border border-purple-500/30 animate-border-glow shadow-[0_0_30px_rgba(168,85,247,0.15)]">
+              <Shield className="h-9 w-9 text-purple-400" />
             </div>
           </div>
           <h1 className="font-teko text-5xl font-bold text-white tracking-wider">
-            COMMAND <span className="text-green-400">CENTER</span>
+            COMMAND <span className="text-purple-400">CENTER</span>
           </h1>
-          <p className="text-gray-600 text-xs tracking-widest uppercase mt-2">Admin Control Panel</p>
+          <p className="text-purple-300/40 text-xs tracking-[0.25em] uppercase mt-2">
+            Admin Control Panel
+          </p>
         </div>
 
-        <div className="glass-card rounded-2xl p-8 shadow-2xl animate-border-glow">
-          <h2 className="font-teko text-2xl font-semibold text-white mb-6 tracking-wide">ADMIN LOGIN</h2>
+        {/* Card */}
+        <div className="glass-card rounded-2xl p-8 shadow-2xl animate-border-glow"
+             style={{ boxShadow: '0 0 60px rgba(124,58,237,0.15), inset 0 1px 0 rgba(168,85,247,0.1)' }}>
+
+          <h2 className="font-teko text-2xl font-semibold text-purple-200 mb-6 tracking-widest uppercase">
+            Admin Login
+          </h2>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-2 text-red-400 text-sm animate-fade-in">
+            <div className="mb-5 p-3 bg-red-500/10 border border-red-500/25 rounded-lg flex items-center gap-2 text-red-400 text-sm animate-fade-in">
               <AlertCircle className="h-4 w-4 flex-shrink-0" />{error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5 tracking-widest uppercase">Username</label>
+              <label className="block text-xs font-semibold text-purple-300/60 mb-2 tracking-[0.15em] uppercase">
+                Username
+              </label>
               <input type="text" value={username} onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3 glass-input rounded-lg text-white placeholder-gray-600 focus:outline-none font-mono text-sm" placeholder="Admin username" />
+                className="w-full px-4 py-3 glass-input rounded-lg text-purple-100 placeholder-purple-900/60 focus:outline-none text-sm"
+                placeholder="admin_username" autoComplete="username" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5 tracking-widest uppercase">Password</label>
+              <label className="block text-xs font-semibold text-purple-300/60 mb-2 tracking-[0.15em] uppercase">
+                Password
+              </label>
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 glass-input rounded-lg text-white placeholder-gray-600 focus:outline-none font-mono text-sm" placeholder="Admin password" />
+                className="w-full px-4 py-3 glass-input rounded-lg text-purple-100 placeholder-purple-900/60 focus:outline-none text-sm"
+                placeholder="••••••••" autoComplete="current-password" />
             </div>
             <button type="submit" disabled={loading}
-              className="w-full py-3 btn-green rounded-lg text-sm tracking-wider uppercase">
+              className="w-full py-3 mt-2 btn-purple rounded-lg tracking-widest uppercase">
               {loading ? 'AUTHENTICATING...' : 'ACCESS GRANTED'}
             </button>
           </form>
         </div>
 
-        <p className="text-center text-gray-700 text-xs mt-6 tracking-widest uppercase font-mono">
+        <p className="text-center text-purple-900/50 text-xs mt-6 tracking-[0.2em] uppercase font-mono">
           Authorized Personnel Only
         </p>
       </div>
