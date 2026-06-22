@@ -40,17 +40,11 @@ router.post('/login', async (req, res) => {
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
 
-    res.cookie('refreshToken', refreshToken, {
-  httpOnly: true,
-  secure: true,
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-  maxAge: 7 * 24 * 60 * 60 * 1000
-});
-
     res.json({
       success: true,
       data: {
         accessToken,
+        refreshToken,
         user: {
           id: team._id,
           username: team.username,
@@ -82,17 +76,11 @@ router.post('/admin/login', async (req, res) => {
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
 
- res.cookie('refreshToken', refreshToken, {
-  httpOnly: true,
-  secure: true,
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-  maxAge: 7 * 24 * 60 * 60 * 1000
-});
-
     res.json({
       success: true,
       data: {
         accessToken,
+        refreshToken,
         user: {
           id: 'admin',
           username,
@@ -109,7 +97,7 @@ router.post('/admin/login', async (req, res) => {
 // Refresh token
 router.post('/refresh', async (req, res) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.body.refreshToken;
     if (!refreshToken) {
       return res.status(401).json({ success: false, message: 'Refresh token required' });
     }
@@ -131,7 +119,6 @@ router.post('/refresh', async (req, res) => {
 
 // Logout
 router.post('/logout', (req, res) => {
-  res.clearCookie('refreshToken');
   res.json({ success: true, message: 'Logged out' });
 });
 
