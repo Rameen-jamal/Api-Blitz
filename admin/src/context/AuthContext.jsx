@@ -17,8 +17,9 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     const { data } = await api.post('/auth/admin/login', { username, password });
-    const { accessToken, user: userData } = data.data;
+    const { accessToken, refreshToken, user: userData } = data.data;
     localStorage.setItem('admin_accessToken', accessToken);
+    localStorage.setItem('admin_refreshToken', refreshToken);
     localStorage.setItem('admin_user', JSON.stringify(userData));
     setUser(userData);
     return userData;
@@ -29,6 +30,7 @@ export const AuthProvider = ({ children }) => {
       await api.post('/auth/logout');
     } catch (e) {}
     localStorage.removeItem('admin_accessToken');
+    localStorage.removeItem('admin_refreshToken');
     localStorage.removeItem('admin_user');
     setUser(null);
   };

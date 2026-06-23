@@ -4,7 +4,6 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const api = axios.create({
   baseURL: `${API_URL}/api`,
-  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -32,10 +31,12 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
+        const refreshToken = localStorage.getItem('admin_refreshToken');
+        if (!refreshToken) throw new Error('No refresh token');
+
         const { data } = await axios.post(
           `${API_URL}/api/auth/refresh`,
-          {},
-          { withCredentials: true }
+          { refreshToken }
         );
 
         const newToken = data.data.accessToken;
@@ -45,6 +46,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         localStorage.removeItem('admin_accessToken');
+        localStorage.removeItem('admin_refreshToken');
         localStorage.removeItem('admin_user');
         window.location.href = '/login';
         return Promise.reject(refreshError);
